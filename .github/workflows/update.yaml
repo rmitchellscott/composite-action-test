@@ -1,0 +1,42 @@
+name: "Update Temp Environment"
+
+on:
+  workflow_call:
+    inputs:
+      file-path:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      pr:
+        required: true
+        type: string
+    secrets:
+      envPAT:
+        required: true
+jobs:
+  update-temp:
+    name: Update Temp 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          token: ${{ secrets.envPAT }}
+      - name: "Check file existence"
+        id: filecheck
+        uses: andstor/file-existence-action@v2
+        with:
+          files: ${{ inputs.file-path }}
+      - id: short-sha
+        uses: benjlevesque/short-sha@v2.1
+      - name: Bump version
+        uses: clevyr/yampl-action@v1
+        if: steps.filecheck.outputs.files_exists == 'true'
+        with:
+          file: ${{ inputs.file-path }}
+          values: |
+            tag=${{ github.sha }}
+          commit_message: ":arrow_up: Bump temp${{ inputs.pr }} ${{ github.event.repository.name }} to ${{ steps.short-sha.outputs.sha }}"

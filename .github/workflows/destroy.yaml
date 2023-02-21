@@ -1,0 +1,49 @@
+name: "Destroy Temp Environment"
+
+on:
+  workflow_call:
+    inputs:
+      file-path:
+        required: true
+        type: string
+      temp-path:
+        required: true
+        type: string
+      target-branch:
+        required: false
+        type: string
+        default: main
+      repository:
+        required: true
+        type: string
+      pr:
+        required: true
+        type: string
+    secrets:
+      envPAT:
+        required: true
+
+jobs:
+  delete-temp:
+    name: Destroy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          token: ${{ secrets.envPAT }}
+      - name: "Check file existence"
+        id: filecheck
+        uses: andstor/file-existence-action@v2
+        with:
+          files: ${{ inputs.file-path }}
+      - name: Delete temp directory
+        if: steps.filecheck.outputs.files_exists == 'true'
+        run: rm -rf ${{ inputs.temp-path }}
+        shell: bash
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Delete temp deployment for PR ${{ inputs.pr }}
+          branch: ${{ inputs.target-branch }}

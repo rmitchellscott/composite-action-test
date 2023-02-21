@@ -1,0 +1,27 @@
+name: "Create Temp Environment"
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+    secrets:
+      envPAT:
+        required: true
+jobs:
+  create-temp:
+    name: Create Temp 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          token: ${{ secrets.envPAT }}
+      - id: short-sha
+        uses: benjlevesque/short-sha@v2.1
+      - name: Template Temp and Commit
+        uses: rmitchellscott/composite-action-test/create@main
+        with: 
+          commit_message: ":arrow_up: Create temp deployment for PR ${{ env.PR_NUMBER }} from commit ${{ steps.short-sha.outputs.sha }}"

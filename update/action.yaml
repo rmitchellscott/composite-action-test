@@ -1,5 +1,5 @@
-name: "Composite Action Test"
-description: "Testing composite action envs"
+name: "Composite Action Update"
+description: "Testing update"
 author: "Mitchell"
 
 inputs:
@@ -34,3 +34,4 @@ runs:
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: ${{ inputs.commit_message }}
+        branch: main
