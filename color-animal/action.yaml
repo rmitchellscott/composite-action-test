@@ -1,0 +1,14 @@
+name: "Color Animal Generator"
+description: "Generates color-animal names"
+author: "Mitchell"
+outputs:
+  result:
+    value: ${{ steps.generate-name.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Generate the name
+      id: generate-name
+      run: echo "result=$(shuf -n 1 "${{ github.action_path }}/colors.txt")-$(shuf -n 1 "${{ github.action_path }}/animals.txt")" >> $GITHUB_OUTPUT
+      shell: bash
