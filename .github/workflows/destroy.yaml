@@ -3,13 +3,10 @@ name: "Destroy Temp Environment"
 on:
   workflow_call:
     inputs:
-      file-path:
-        required: true
-        type: string
       temp-path:
         required: true
         type: string
-      target-branch:
+      commit-branch:
         required: false
         type: string
         default: main
@@ -37,7 +34,7 @@ jobs:
         id: filecheck
         uses: andstor/file-existence-action@v2
         with:
-          files: ${{ inputs.file-path }}
+          files: ${{ inputs.temp-path }}
       - name: Delete temp directory
         if: steps.filecheck.outputs.files_exists == 'true'
         run: rm -rf ${{ inputs.temp-path }}

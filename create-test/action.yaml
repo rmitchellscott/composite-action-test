@@ -16,7 +16,6 @@ inputs:
     required: true
   branch:
     required: false
-    default: main
   repo-token: 
     required: true
 
@@ -28,21 +27,13 @@ runs:
       with:
         repository: ${{ inputs.repository }}
         token: ${{ inputs.repo-token }}
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ inputs.go_version }}
-    - name: Install YAMPL
-      shell: bash
-      run: go install github.com/clevyr/yampl@${{ inputs.yampl_version }}
     - name: Copy template to destination
       run: mkdir -p ${{ inputs.dest-path }}/temp${{ github.event.pull_request.number }} && cp -r ${{ inputs.template-path }}/* ${{ inputs.dest-path }}/temp${{ github.event.pull_request.number }}
       shell: bash
-      shell: bash
     - name: Template with YAMPL
-      uses: clevyr/yamlp-action@main
+      uses: clevyr/yampl-action@main
       with:
         file: ${{ inputs.dest-path }}/temp${{ github.event.pull_request.number }}/**/*.yaml
         values: ${{ inputs.yampl_values }}
         commit_message: ${{ inputs.commit_message }}
-        commit_branch: main
+        commit_branch: ${{ inputs.branch }}
